@@ -67,5 +67,16 @@ scraped_data.head()
 
 #Once data frame exists, then I need to determine how to categorize the articles into one of 10 TPS policy portfolios: (Violent Crime, Community Policing & Demographics, GIS & Technology, Missing Persons, Open Data & Visualization, Overdoses & Cannabis, Persons in Crisis, Race-Based Data Collection, Staffing & Workload, Traffic) + perhaps a catch-all category: Law Enforcement
 
+#choosing a python library for sentiment analysis: https://www.iflexion.com/blog/sentiment-analysis-python
+
+NLTK(Natural Language Toolkit) - does not provide neural network models or integrated word vectors
+
+SpaCy - requires a lot of memory
+
+**TextBlob - greater ease of use; integrated sentiment analysis with two properties(subjectivity and polarity); VADER (Valence Aware Dictionary and sEntiment Reasoner) - need to check that TextBlob's native sentiment analysis functionality fits this project or whether third-party libraries or modules avail.
+
+Stanford CoreNLP
+
+Gensim - native and highly optimized implementation of Google's word2vec machine learning models
 
 
