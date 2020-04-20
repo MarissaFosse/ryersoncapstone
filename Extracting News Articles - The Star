@@ -3,6 +3,8 @@
 import requests
 from bs4 import BeautifulSoup
 
+#list of 147 Toronto Star articles to extract content 
+#Or, use Url searching Toronto Star for articles containing "Toronto" + "Police"?
 
 URL = 'https://www.thestar.com/news/gta/2019/12/31/with-291-people-shot-2019-is-closing-as-torontos-bloodiest-year-on-record-for-overall-gun-violence.html'
 
@@ -14,33 +16,56 @@ results = soup.find(id='body-content')
 
 article = results.find_all('div', class_='c-article-body__content')
 
-#Step 1: find all paragraphs
+#Trial: find all paragraphs
 
 for paragraph in article:
-    # Each paragraph is a new BeautifulSoup object.
-    parg_elem = paragraph.find('p', class_='text-block-container')
-    print(parg_elem.text.strip())
+    parag_elem = paragraph.find('p', class_='text-block-container')
+    print(parag_elem.text.strip())
     print()
 	
-#above returns only first line
+#above returns only first line - how do I get it to iterate through each <p class="text-block-container">?
+
+#Step 1: return article heading
+h1_tag = soup.find('h1')
+title = h1_tag.text
+print(title)
+
+#Step 2: return publishing date
+pub_date = soup.find('span', class_='article__published-date')
+pub_date = pub_date.text
+print(pub_date)
 
 
-page = requests.get(URL)
+#Step 3: find all paragraphs
 
-soup = BeautifulSoup(page.content, 'html.parser')
+p_tags = soup.find_all('p', class_='text-block-container')
+p_tags_text = [tag.get_text().strip() for tag in p_tags]
+sentence_list = [sentence for sentence in p_tags_text if not '\n' in sentence]
+sentence_list = [sentence for sentence in sentence_list if '.' in sentence]
+article = ' '.join(sentence_list)
 
-results = soup.find(id='body-content')
+#Step 4: extract all unordered list items (may not include)
 
-article = results.find_all('div', class_='c-article-body__content')
+li_tags = soup.find_all('li')
+li_tags_text = [tag.get_text().strip() for tag in li_tags]
+bullet_list = [sentence for sentence in li_tags_text if not '\n' in sentence]
+bullet_list = [sentence for sentence in bullet_list if '.' in sentence]
+points = ' '.join(bullet_list)
 
-#Step 1: find all paragraphs
+# How do I merge article and points to one text set?
+# Need to determine how I can pass list of urls through function that will extract <title>, <pub_date>, and <article> text into a dataframe... 
 
-for paragraph in article:
-    parg_elem = paragraph.find_all('p', class_='text-block-container')
-    print(str(len(parg_elem)))
+#Step 5: create a data frame
+
+import pandas as pd 
+
+scraped_data = pd.DataFrame({'title': title, 'date': pub_date, 'content': article})
+scraped_data.head()
 
 
-#Step 2: extract all unordered list items
+#tokenize, stemming, vectorization
 
-list_elem = paragraph.find('div', class_='text-block-container').ul
-print(list_elem.text.strip())
+#Once data frame exists, then I need to determine how to categorize the articles into one of 10 TPS policy portfolios: (Violent Crime, Community Policing & Demographics, GIS & Technology, Missing Persons, Open Data & Visualization, Overdoses & Cannabis, Persons in Crisis, Race-Based Data Collection, Staffing & Workload, Traffic) + perhaps a catch-all category: Law Enforcement
+
+
+
